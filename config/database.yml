@@ -23,4 +23,7 @@ test:
 
 production:
   <<: *default
-  database: slack_bot_on_rails_production
+  database: d6gh0j1kjqc26r
+  username: wqcucguiugktkp
+  port: 5432
+  password: fVkhZm109DXo40JRdF06K0MoT6

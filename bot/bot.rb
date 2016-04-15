@@ -23,8 +23,11 @@ class Bot < SlackRubyBot::Bot
   end
 
   command 'menu' do |client, data, match|
+    food_list = Food.all
+    puts food_list.to_json
     welcome = 'Hé lô, tôi là robot, vui lòng gõ choose @number, trong đó @number là số thứ tự món bạn cần ăn !'
     client.say(channel: data.channel, text: welcome)
+    puts data.user
     @foods.each do |key, value|
       client.say(channel: data.channel, text: key + '. ' + value )
     end
@@ -68,9 +71,10 @@ class Bot < SlackRubyBot::Bot
       @foods_oders.clear
       client.say(channel: data.channel, text:'Cảm ơn, chúng tôi sẽ giao nhanh cho bạn !')
     end
-
   end
 
-
+  match /^How is the weather in (?<location>\w*)\?$/ do |client, data, match|
+    client.say(channel: data.channel, text: "The weather in #{match[:location]} is nice.")
+  end
 
 end
