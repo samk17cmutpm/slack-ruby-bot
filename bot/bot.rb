@@ -27,6 +27,11 @@ class Bot < SlackRubyBot::Bot
   end
 
   command 'choose' do |client, data, match|
+
+    if !User.exists?(:id_slack => data.user)
+      self.add_new_user data.user
+    end
+
     choose = match['expression'].to_i
     valid = true
     if Food.exists?(:id => choose)
@@ -39,9 +44,9 @@ class Bot < SlackRubyBot::Bot
     client.say(channel: data.channel, text: response)
     if valid
       if @foods_oders.empty? || !@foods_oders.has_key?(choose)
-        @foods_oders[choose] = 1
+        @foods_oders[choose.to_s] = 1
       else
-        @foods_oders[choose] = @foods_oders[choose] + 1
+        @foods_oders[choose.to_s] = @foods_oders[choose.to_s] + 1
       end
       puts @foods_oders.to_json
       client.say(channel: data.channel, text: "Bạn muốn chọn thêm món gì nữa không ?, nếu không vui lòng gõ finish để kết thúc !")
@@ -49,19 +54,33 @@ class Bot < SlackRubyBot::Bot
   end
 
   command 'finish' do |client, data, match|
+
     if @foods_oders.empty?
       client.say(channel: data.channel, text:'Vui lòng gõ menu, bạn chưa order món nào cả :D')
     else
-      @foods_oders.each do |key, value|
-        client.say(channel: data.channel, text: "#{@foods[key]} : #{value} phần")
+      if User.exists?(:id_slack => data.user)
+        if User.find_by(:id_slack => data.user).is_admin
+          @foods_oders.each do |key, value|
+            client.say(channel: data.channel, text: "#{Food.find_by(:id => key).name} : #{value} phần")
+          end
+          @foods_oders.clear
+          client.say(channel: data.channel, text:'Cảm ơn, chúng tôi sẽ giao nhanh cho bạn !')
+        else
+          client.say(channel: data.channel, text:'Xin lỗi, bạn không thể tạo lệnh finish !')
+        end
+      else
+        client.say(channel: data.channel, text:'Xin lỗi, bạn không thể tạo lệnh finish !')
       end
-      @foods_oders.clear
-      client.say(channel: data.channel, text:'Cảm ơn, chúng tôi sẽ giao nhanh cho bạn !')
     end
+
   end
 
+  def self.add_new_user(id_slack)
+    user_temp = {:id_slack => id_slack, :is_admin => false}
+    user = User.new(user_temp)
+    user.save
+  end
   match /^How is the weather in (?<location>\w*)\?$/ do |client, data, match|
     client.say(channel: data.channel, text: "The weather in #{match[:location]} is nice.")
   end
-
 end
