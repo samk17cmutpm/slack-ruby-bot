@@ -1,7 +1,5 @@
 class Bot < SlackRubyBot::Bot
   @id = 0
-
-  @foods = Food.all
   @foods_oders = {}
   def self.next_id
     @id = @id % 10 + 1
@@ -21,13 +19,14 @@ class Bot < SlackRubyBot::Bot
     welcome = 'Hé lô, tôi là robot, vui lòng gõ choose @number, trong đó @number là số thứ tự món bạn cần ăn !'
     client.say(channel: data.channel, text: welcome)
     puts data.user
+    @foods = Food.all
     @foods.each do |food|
       client.say(channel: data.channel, text: "#{food.id} : #{food.name}" )
     end
   end
 
   command 'choose' do |client, data, match|
-
+    # this function to save new user
     if !User.exists?(:id_slack => data.user)
       self.add_new_user data.user
     end
