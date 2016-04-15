@@ -43,7 +43,7 @@ class Bot < SlackRubyBot::Bot
     end
     client.say(channel: data.channel, text: response)
     if valid
-      if @foods_oders.empty? || !@foods_oders.has_key?(choose)
+      if @foods_oders.empty? || !@foods_oders.has_key?(choose.to_s)
         @foods_oders[choose.to_s] = 1
       else
         @foods_oders[choose.to_s] = @foods_oders[choose.to_s] + 1
