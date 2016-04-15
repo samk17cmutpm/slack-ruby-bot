@@ -1,12 +1,7 @@
 class Bot < SlackRubyBot::Bot
   @id = 0
 
-  @foods = {
-            "1" => 'Ram cuốn cải',
-            "2" => 'Bánh Bao',
-            "3" => 'Bánh Mỳ Chả',
-            "4" => 'Bánh Mỳ Bà Lan'
-  }
+  @foods = Food.all
   @foods_oders = {}
   def self.next_id
     @id = @id % 10 + 1
@@ -23,31 +18,23 @@ class Bot < SlackRubyBot::Bot
   end
 
   command 'menu' do |client, data, match|
-    food_list = Food.all
-    puts food_list.to_json
     welcome = 'Hé lô, tôi là robot, vui lòng gõ choose @number, trong đó @number là số thứ tự món bạn cần ăn !'
     client.say(channel: data.channel, text: welcome)
     puts data.user
-    @foods.each do |key, value|
-      client.say(channel: data.channel, text: key + '. ' + value )
+    @foods.each do |food|
+      client.say(channel: data.channel, text: "#{food.id} : #{food.name}" )
     end
   end
 
   command 'choose' do |client, data, match|
-    choose = match['expression']
+    choose = match['expression'].to_i
     valid = true
-    case choose
-      when '1'
-        response = 'Bạn đã chọn ram cuốn cải '
-      when '2'
-        response = 'Bạn đã chọn bánh bao '
-      when '3'
-        response = 'Bạn đã chọn bánh mỳ chả'
-      when '4'
-        response = 'Bạn đã chọn bánh mỳ bà lan'
-      else
-        valid = false
-        response = 'Nhục vãi, chọn mà cũng chọn ko đc, chọn lại đi :v'
+    if Food.exists?(:id => choose)
+      food = Food.find_by(id: choose)
+      response = "Bạn đã chọn #{food.name}"
+    else
+      valid = false
+      response = 'Nhục vãi, chọn mà cũng chọn ko đc, chọn lại đi :v'
     end
     client.say(channel: data.channel, text: response)
     if valid
