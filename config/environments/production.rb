@@ -76,4 +76,6 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  ENV['SLACK_API_TOKEN'] = 'xoxb-33914956817-pzuGdy2yuTHLb1pTIq5wA3ek'
 end
