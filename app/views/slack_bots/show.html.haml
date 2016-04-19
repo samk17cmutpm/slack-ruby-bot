@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Token:
+  = @slack_bot.token
+
+= link_to 'Edit', edit_slack_bot_path(@slack_bot)
+\|
+= link_to 'Back', slack_bots_path

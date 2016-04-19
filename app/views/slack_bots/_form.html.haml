@@ -1,0 +1,13 @@
+= form_for @slack_bot do |f|
+  - if @slack_bot.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@slack_bot.errors.count, "error")} prohibited this slack_bot from being saved:"
+      %ul
+        - @slack_bot.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :token
+    = f.text_field :token
+  .actions
+    = f.submit 'Save'

@@ -16,7 +16,7 @@ class Bot < SlackRubyBot::Bot
   end
 
   command 'menu' do |client, data, match|
-    welcome = 'Hé lô, tôi là robot, vui lòng gõ choose @number, trong đó @number là số thứ tự món bạn cần ăn !'
+    welcome = 'Hi, I am robot, Please type choose @number, @number is the order of the foods'
     client.say(channel: data.channel, text: welcome)
     puts data.user
     @foods = Food.all
@@ -35,10 +35,10 @@ class Bot < SlackRubyBot::Bot
     valid = true
     if Food.exists?(:id => choose)
       food = Food.find_by(id: choose)
-      response = "Bạn đã chọn #{food.name}"
+      response = "You choose #{food.name}"
     else
       valid = false
-      response = 'Nhục vãi, chọn mà cũng chọn ko đc, chọn lại đi :v'
+      response = "You type wrong command, please type again"
     end
     client.say(channel: data.channel, text: response)
     if valid
@@ -48,14 +48,14 @@ class Bot < SlackRubyBot::Bot
         @foods_oders[choose.to_s] = @foods_oders[choose.to_s] + 1
       end
       puts @foods_oders.to_json
-      client.say(channel: data.channel, text: "Bạn muốn chọn thêm món gì nữa không ?, nếu không vui lòng gõ finish để kết thúc !")
+      client.say(channel: data.channel, text: "Do you want to choose anything else ?, if not type finish to commplete the order")
     end
   end
 
   command 'finish' do |client, data, match|
 
     if @foods_oders.empty?
-      client.say(channel: data.channel, text:'Vui lòng gõ menu, bạn chưa order món nào cả :D')
+      client.say(channel: data.channel, text:'Please type menu, you have not odered anything !')
     else
       if User.exists?(:id_slack => data.user)
         if User.find_by(:id_slack => data.user).is_admin
@@ -63,12 +63,12 @@ class Bot < SlackRubyBot::Bot
             client.say(channel: data.channel, text: "#{Food.find_by(:id => key).name} : #{value} phần")
           end
           @foods_oders.clear
-          client.say(channel: data.channel, text:'Cảm ơn, chúng tôi sẽ giao nhanh cho bạn !')
+          client.say(channel: data.channel, text:'Thank you !')
         else
-          client.say(channel: data.channel, text:'Xin lỗi, bạn không thể tạo lệnh finish !')
+          client.say(channel: data.channel, text: "Sorry, you cannot allowed to finish the menu")
         end
       else
-        client.say(channel: data.channel, text:'Xin lỗi, bạn không thể tạo lệnh finish !')
+        client.say(channel: data.channel, text: "Sorry, you cannot allowed to finish the menu")
       end
     end
 

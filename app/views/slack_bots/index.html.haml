@@ -1,0 +1,21 @@
+%h1 Listing slack_bots
+
+%table
+  %thead
+    %tr
+      %th Token
+      %th
+      %th
+      %th
+
+  %tbody
+    - @slack_bots.each do |slack_bot|
+      %tr
+        %td= slack_bot.token
+        %td= link_to 'Show', slack_bot
+        %td= link_to 'Edit', edit_slack_bot_path(slack_bot)
+        %td= link_to 'Destroy', slack_bot, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Slack bot', new_slack_bot_path
